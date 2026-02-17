@@ -1,0 +1,21 @@
+architecture: standalone
+
+auth:
+  enabled: true
+  password: "REPLACE_ME"
+
+master:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  persistence:
+    enabled: true
+    size: 5Gi
+
+replica:
+  replicaCount: 0
