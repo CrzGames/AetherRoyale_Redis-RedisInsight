@@ -38,6 +38,8 @@ Chaque dossier représente un environnement indépendant.
 * Cluster Kubernetes fonctionnel
 * Helm installé
 * Accès kubectl configuré
+* cert-manager installé (pour TLS)
+* Ingress Controller NGINX installé
 
 <br /><br />
 
