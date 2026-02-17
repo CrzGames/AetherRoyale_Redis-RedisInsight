@@ -15,7 +15,7 @@ Déploiement de Redis pour les environnements Kubernetes du projet **Aether Roya
 # 📦 Structure du dépôt
 
 ```
-AetherRoyale_Redis/
+AetherRoyale_Redis-RedisInsight/
   k8s/
     staging/
       values.yaml
