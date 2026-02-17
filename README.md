@@ -4,7 +4,7 @@
 Déploiement d’un **Redis standalone** pour l’environnement **staging** du projet Aether Royale.
 
 * Mode : **standalone** (pas de HA)
-* Stockage : **PVC 5 Gi** (cluster staging)
+* Stockage : **PVC 5 Gi**
 
 ## Production
 
