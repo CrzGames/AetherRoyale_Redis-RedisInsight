@@ -2,9 +2,9 @@
 
 Déploiement de Redis pour les environnements Kubernetes du projet **Aether Royale**.
 
-* Staging : Redis standalone (simple, léger, non ha)
-* Production : Redis HA
-* Monitoring : RedisInsight (interface web)
+* Staging : Redis standalone (simple, léger, non HA)
+* Production : Redis HA (à prévoir)
+* Monitoring : RedisInsight (interface web sécurisée)
 
 <br /><br />
 
@@ -37,7 +37,7 @@ Chaque dossier représente un environnement indépendant.
 
 * Cluster Kubernetes fonctionnel
 * Helm installé
-* Accès kubectl configuré
+* Accès `kubectl` configuré
 * cert-manager installé (pour TLS)
 * Ingress Controller NGINX installé
 
@@ -77,16 +77,11 @@ par un mot de passe Redis fort.
 
 <br /><br />
 
-# 🚀 Installation
-
-## Ajouter le repo Helm Bitnami
-
-```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-```
+# 🚀 Installation Redis / RedisInsight
 
 ## 🧪 Installation – Staging
+
+Déployer Redis :
 
 ```bash
 helm upgrade --install staging-redis bitnami/redis \
@@ -95,13 +90,27 @@ helm upgrade --install staging-redis bitnami/redis \
   -f k8s/staging/values.yaml
 ```
 
+Déployer RedisInsight :
+
+```bash
+kubectl apply -f k8s/staging/redisinsight.yaml
+```
+
 ## 🏭 Installation – Production
+
+Déployer Redis :
 
 ```bash
 helm upgrade --install prod-redis bitnami/redis \
   -n prod-redis \
   --create-namespace \
   -f k8s/production/values.yaml
+```
+
+Déployer RedisInsight :
+
+```bash
+kubectl apply -f k8s/production/redisinsight.yaml
 ```
 
 <br /><br />
@@ -179,16 +188,20 @@ RedisInsight permet de :
 * Tester des commandes
 * Debug le cache
 
-## Installation – Staging
+## 🔒 Protection par BasicAuth
+
+Créer le fichier auth :
 
 ```bash
-kubectl apply -f k8s/staging/redisinsight.yaml
+sudo apt-get update && sudo apt-get install -y apache2-utils
+htpasswd -nbB admin 'MONPASSWORD' > auth
 ```
 
-## Installation – Production
+Créer le secret Kubernetes :
 
 ```bash
-kubectl apply -f k8s/production/redisinsight.yaml
+# modifier le namespace si besoin entre staging / prod
+kubectl -n staging-db create secret generic redisinsight-basic-auth --from-file=auth
 ```
 
 <br /><br />
@@ -197,15 +210,21 @@ kubectl apply -f k8s/production/redisinsight.yaml
 
 <br /><br />
 
-## Accès
+# Accès RedisInsight
 
-RedisInsight est accessible directement via l’Ingress privé :
+## Staging
 
 ```
-https://redisinsight.staging.aetherroyale.crzgames.com/
+https://staging.redisinsight.aetherroyale.crzgames.com/
 ```
 
-Il suffit d’ouvrir cette URL dans le navigateur pour consulter l’interface.
+## Production
+
+```
+https://redisinsight.aetherroyale.crzgames.com/
+```
+
+Un login/mot de passe BasicAuth sera demandé avant l’accès.
 
 <br /><br />
 
@@ -215,13 +234,31 @@ Il suffit d’ouvrir cette URL dans le navigateur pour consulter l’interface.
 
 # 🧱 Notes Architecture
 
-### Staging
+## Staging
 
 * Redis standalone
 * 1 PVC de 5Go
-* Pas de haute dispo
+* Pas de haute disponibilité
 * 1 seule pod
+* RedisInsight exposé via Ingress sécurisé
 
-### Production
+## Production
 
-TODO
+* Réplication Redis
+* Haute disponibilité
+* Sauvegardes automatiques
+* Monitoring avancé
+
+<br /><br />
+
+---
+
+<br /><br />
+
+# 🔒 Bonnes pratiques
+
+* Ne jamais exposer Redis publiquement
+* Accès uniquement interne au cluster
+* Toujours utiliser des mots de passe forts
+* Garder RedisInsight protégé par BasicAuth
+* Utiliser des credentials différents entre staging et production

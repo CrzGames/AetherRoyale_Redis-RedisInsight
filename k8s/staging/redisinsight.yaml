@@ -67,10 +67,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - redisinsight.staging.aetherroyale.crzgames.com
+        - staging.redisinsight.aetherroyale.crzgames.com
       secretName: redisinsight-tls
   rules:
-    - host: redisinsight.staging.aetherroyale.crzgames.com
+    - host: staging.redisinsight.aetherroyale.crzgames.com
       http:
         paths:
           - path: /
